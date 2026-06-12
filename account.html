@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Account — Sareeify Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+</head>
+<body>
+<div id="header"></div>
+
+<section class="page">
+  <div class="wrap">
+    <div id="acctRoot"></div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<script src="/store.js"></script>
+<script src="/shared.js"></script>
+<script>
+  function isLoggedIn(){ return document.cookie.includes('sf_user='); }
+  function userName(){ const m=document.cookie.match(/sf_user=([^;]*)/); return m?decodeURIComponent(m[1]):'Guest'; }
+
+  function renderLogin(){
+    document.getElementById('acctRoot').innerHTML = `
+    <div class="page-head"><span class="eyebrow">ACCOUNT</span><h1>Sign In</h1></div>
+    <div class="loginbox">
+      <div class="notice">Demo login — real accounts activate once the database is connected. Enter any name &amp; email to preview your dashboard.</div>
+      <div class="field"><label>Name</label><input id="lname" placeholder="Your name"></div>
+      <div class="field"><label>Email</label><input id="lemail" type="email" placeholder="you@example.com"></div>
+      <button class="btn-coral" id="login" style="width:100%;text-align:center">SIGN IN</button>
+    </div>`;
+    document.getElementById('login').onclick=()=>{
+      const n=document.getElementById('lname').value.trim()||'Customer';
+      document.cookie='sf_user='+encodeURIComponent(n)+'; path=/; max-age='+60*60*24*7;
+      renderDash();
+    };
+  }
+
+  function renderDash(){
+    document.getElementById('acctRoot').innerHTML = `
+    <div class="page-head" style="text-align:left"><span class="eyebrow">MY ACCOUNT</span><h1>Hi, ${userName()} 👋</h1></div>
+    <div class="acct">
+      <div class="side">
+        <a class="on" data-tab="orders" href="#">Orders</a>
+        <a data-tab="profile" href="#">Profile</a>
+        <a data-tab="address" href="#">Addresses</a>
+        <a data-tab="wishlist" href="#">Wishlist</a>
+        <a id="logout" href="#" style="color:#dc2626">Sign out</a>
+      </div>
+      <div id="tab"></div>
+    </div>`;
+
+    const tabs = {
+      orders: `<h3 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:18px">Your Orders</h3>
+        <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">
+          <div style="padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between">
+            <div><b>#104289</b><div style="color:#888;font-size:13px;margin-top:3px">Placed Jun 10, 2026 · 2 items</div></div>
+            <div style="text-align:right"><span style="background:#e7f6ed;color:#1f9d55;font-size:12px;padding:5px 11px;border-radius:20px">Delivered</span><div style="margin-top:6px;font-weight:600">₹11,498</div></div>
+          </div>
+          <div style="padding:18px 20px;display:flex;justify-content:space-between">
+            <div><b>#104201</b><div style="color:#888;font-size:13px;margin-top:3px">Placed Jun 6, 2026 · 1 item</div></div>
+            <div style="text-align:right"><span style="background:#fef3e2;color:#d97706;font-size:12px;padding:5px 11px;border-radius:20px">Shipped</span><div style="margin-top:6px;font-weight:600">₹2,499</div></div>
+          </div>
+        </div>
+        <p style="color:#999;font-size:13px;margin-top:14px">Showing sample orders. Real order history appears once the database is connected.</p>`,
+      profile: `<h3 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:18px">Profile</h3>
+        <div class="field"><label>Name</label><input value="${userName()}"></div>
+        <div class="field"><label>Email</label><input placeholder="you@example.com"></div>
+        <div class="field"><label>Phone</label><input placeholder="+91 ..."></div>
+        <button class="btn-dark">SAVE CHANGES</button>`,
+      address: `<h3 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:18px">Saved Addresses</h3>
+        <div style="border:1px solid var(--line);border-radius:12px;padding:20px;color:#444;line-height:1.7">
+          <b>${userName()}</b><br>123 Festive Lane, Andheri West<br>Mumbai, Maharashtra 400058<br>+91 98XXX 12345</div>
+        <button class="btn-outline" style="margin-top:16px">+ ADD ADDRESS</button>`,
+      wishlist: `<h3 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:18px">Wishlist</h3>
+        <div class="pgrid" id="wgrid"></div>`
+    };
+    function show(name){
+      document.getElementById('tab').innerHTML = tabs[name];
+      document.querySelectorAll('[data-tab]').forEach(a=>a.classList.toggle('on',a.dataset.tab===name));
+      if(name==='wishlist'){ const g=document.getElementById('wgrid'); g.innerHTML=SF.CATALOG.slice(0,3).map(SF_card).join(''); wireGrid(g); }
+    }
+    show('orders');
+    document.querySelectorAll('[data-tab]').forEach(a=>a.onclick=e=>{e.preventDefault();show(a.dataset.tab);});
+    document.getElementById('logout').onclick=e=>{e.preventDefault();document.cookie='sf_user=; path=/; max-age=0';renderLogin();};
+  }
+
+  isLoggedIn()?renderDash():renderLogin();
+</script>
+</body>
+</html>

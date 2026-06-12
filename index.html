@@ -51,6 +51,23 @@
   .icons svg{width:23px;height:23px;stroke:var(--ink);fill:none;stroke-width:1.6}
   .badge{position:absolute;top:-7px;right:-9px;background:var(--ink);color:#fff;font-size:10px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 
+  /* ---------- dropdown submenus ---------- */
+  nav li[data-menu]{position:relative}
+  .submenu{position:absolute;top:100%;left:0;background:#fff;border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 14px 34px rgba(0,0,0,.1);padding:10px;min-width:210px;display:flex;flex-direction:column;gap:2px;
+    opacity:0;visibility:hidden;transform:translateY(8px);transition:.2s;z-index:50}
+  nav li[data-menu]:hover .submenu,nav li[data-menu].open .submenu{opacity:1;visibility:visible;transform:translateY(0)}
+  .submenu a{font-size:14px;letter-spacing:.3px;padding:10px 14px;border-radius:7px;color:var(--ink);transition:.15s;font-weight:400}
+  .submenu a:hover{background:#faf2ee;color:var(--coral)}
+
+  /* ---------- search bar ---------- */
+  .searchbar{max-height:0;overflow:hidden;transition:max-height .3s ease;border-top:1px solid transparent}
+  .searchbar.open{max-height:90px;border-top:1px solid var(--line)}
+  .searchbar-inner{display:flex;gap:12px;padding:16px 32px}
+  .searchbar input{flex:1;padding:13px 16px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:15px;outline:none}
+  .searchbar input:focus{border-color:var(--coral)}
+  .searchbar button{background:var(--coral);color:#fff;border:none;padding:0 28px;border-radius:9px;font-family:inherit;font-size:14px;letter-spacing:1px;cursor:pointer}
+
   /* ---------- hero ---------- */
   .hero{position:relative;background:var(--peach);overflow:hidden}
   .hero .slide{display:grid;grid-template-columns:1fr 1.05fr 1fr;align-items:end;min-height:660px}
@@ -216,21 +233,27 @@
   <div class="wrap header-grid">
     <nav>
       <ul>
-        <li>SHOP <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></li>
-        <li>SAREES <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></li>
-        <li>COLLECTIONS <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></li>
-        <li>LENGHA CHOLI</li>
+        <li data-menu="SHOP">SHOP <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></li>
+        <li data-menu="SAREES">SAREES <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></li>
+        <li data-menu="COLLECTIONS">COLLECTIONS <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></li>
+        <li><a href="/collections?cat=Lengha%20Choli">LENGHA CHOLI</a></li>
       </ul>
     </nav>
-    <a class="logo" href="#">
+    <a class="logo" href="/">
       <div class="name"><b>S</b>areeify</div>
       <div class="sub">FASHION</div>
     </a>
     <div class="icons">
-      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
-      <div class="ic"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg><span class="badge">0</span></div>
-      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
-      <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg></div>
+      <div class="ic" data-search-toggle title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+      <a class="ic" href="/account" title="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></a>
+      <a class="ic" href="/account" title="Wishlist"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg><span class="badge">0</span></a>
+      <a class="ic" href="/cart" title="Cart"><svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg><span class="badge" data-cart-count>0</span></a>
+    </div>
+  </div>
+  <div class="searchbar" data-search-bar>
+    <div class="wrap searchbar-inner">
+      <input type="text" placeholder="Search for sarees, lehengas, collections...">
+      <button>Search</button>
     </div>
   </div>
 </header>
@@ -335,49 +358,8 @@
       <h2>Best Sellers</h2>
       <p>Our community's favourite picks this season</p>
     </div>
-    <div class="pgrid">
-      <div class="pitem">
-        <div class="pimg"><span class="tag">NEW</span>
-          <span class="wish"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg></span>
-          <img src="https://source.unsplash.com/400x520/?banarasi,saree" alt="">
-          <div class="quick">ADD TO CART</div>
-        </div>
-        <div class="pname">Banarasi Silk Saree</div>
-        <div class="rate">★★★★★</div>
-        <div class="price">₹2,499 <s>₹3,999</s></div>
-      </div>
-      <div class="pitem">
-        <div class="pimg"><span class="tag sale">-30%</span>
-          <span class="wish"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg></span>
-          <img src="https://source.unsplash.com/400x520/?wedding,lehenga,indian" alt="">
-          <div class="quick">ADD TO CART</div>
-        </div>
-        <div class="pname">Royal Wedding Lehenga</div>
-        <div class="rate">★★★★★</div>
-        <div class="price">₹8,999 <s>₹12,999</s></div>
-      </div>
-      <div class="pitem">
-        <div class="pimg">
-          <span class="wish"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg></span>
-          <img src="https://source.unsplash.com/400x520/?anarkali,gown,indian" alt="">
-          <div class="quick">ADD TO CART</div>
-        </div>
-        <div class="pname">Printed Anarkali Set</div>
-        <div class="rate">★★★★☆</div>
-        <div class="price">₹3,299</div>
-      </div>
-      <div class="pitem">
-        <div class="pimg"><span class="tag">BESTSELLER</span>
-          <span class="wish"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg></span>
-          <img src="https://source.unsplash.com/400x520/?sequin,lehenga,cocktail" alt="">
-          <div class="quick">ADD TO CART</div>
-        </div>
-        <div class="pname">Sequin Cocktail Lehenga</div>
-        <div class="rate">★★★★★</div>
-        <div class="price">₹6,499 <s>₹8,999</s></div>
-      </div>
-    </div>
-    <div class="center-btn"><a href="#" class="btn-outline">VIEW ALL PRODUCTS</a></div>
+    <div class="pgrid" id="bestSellers"></div>
+    <div class="center-btn"><a href="/collections" class="btn-outline">VIEW ALL PRODUCTS</a></div>
   </div>
 </section>
 
@@ -435,12 +417,49 @@
   </div>
 </footer>
 
+<script src="/store.js"></script>
 <script>
   const dots=document.querySelectorAll('.dot');
   dots.forEach((d,i)=>d.addEventListener('click',()=>{
     dots.forEach(x=>x.classList.remove('active'));
     d.classList.add('active');
   }));
+
+  // render best sellers from catalog
+  function cardHTML(p){
+    const tag = p.badge ? `<span class="tag${p.badge.startsWith('-')?' sale':''}">${p.badge}</span>` : '';
+    const stars = '★★★★★☆☆☆☆☆'.slice(5-p.rating,10-p.rating);
+    const price = `${SF.money(p.price)} ${p.compare?`<s>${SF.money(p.compare)}</s>`:''}`;
+    return `<div class="pitem">
+      <a class="pimg" href="/product?h=${p.handle}">${tag}
+        <span class="wish" data-wish="${p.handle}"><svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg></span>
+        <img src="${p.img}" alt="${p.title}">
+        <div class="quick" data-add="${p.handle}">ADD TO CART</div>
+      </a>
+      <a class="pname" href="/product?h=${p.handle}" style="color:inherit">${p.title}</a>
+      <div class="rate">${stars}</div>
+      <div class="price">${price}</div>
+    </div>`;
+  }
+  const bs=document.getElementById('bestSellers');
+  if(bs){
+    bs.innerHTML = SF.CATALOG.slice(0,4).map(cardHTML).join('');
+    bs.addEventListener('click', e=>{
+      const add=e.target.closest('[data-add]');
+      if(add){ e.preventDefault(); SF.Cart.add(add.getAttribute('data-add')); toast('Added to cart'); }
+    });
+  }
+
+  // mini toast
+  let tt;
+  function toast(m){
+    let t=document.getElementById('sfToast');
+    if(!t){ t=document.createElement('div'); t.id='sfToast';
+      t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:#1c1c1c;color:#fff;padding:13px 22px;border-radius:30px;font-size:14px;z-index:999;opacity:0;transition:.25s';
+      document.body.appendChild(t); }
+    t.textContent=m; requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
+    clearTimeout(tt); tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(14px)';},1800);
+  }
 </script>
 </body>
 </html>

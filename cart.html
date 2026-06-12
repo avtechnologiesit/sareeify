@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cart — Sareeify Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+</head>
+<body>
+<div id="header"></div>
+
+<section class="page">
+  <div class="wrap">
+    <div class="page-head"><span class="eyebrow">YOUR BAG</span><h1>Shopping Cart</h1></div>
+    <div id="cartRoot"></div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<script src="/store.js"></script>
+<script src="/shared.js"></script>
+<script>
+  function render(){
+    const items = SF.Cart.items();
+    const root = document.getElementById('cartRoot');
+    if(!items.length){
+      root.innerHTML = `<div class="empty">
+        <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+        <h3 style="font-family:'Playfair Display',serif;font-size:24px;margin-bottom:8px;color:#1c1c1c">Your cart is empty</h3>
+        <p style="margin-bottom:22px">Looks like you haven't added anything yet.</p>
+        <a class="btn-dark" href="/collections">START SHOPPING</a>
+      </div>`;
+      return;
+    }
+    const sub = SF.Cart.total();
+    const discount = Math.round(sub*0.10);
+    const total = sub - discount;
+    root.innerHTML = `
+    <div class="cartwrap">
+      <div class="citems">
+        ${items.map(i=>`
+          <div class="citem">
+            <img src="${i.img}" alt="${i.title}">
+            <div>
+              <div class="ct">${i.title}</div>
+              <div class="cp">${SF.money(i.price)}</div>
+              <div class="qtybox" style="margin-top:12px">
+                <button data-dec="${i.handle}">−</button><span>${i.qty}</span><button data-inc="${i.handle}">+</button>
+              </div>
+            </div>
+            <div class="cr">
+              <div style="font-weight:600">${SF.money(i.price*i.qty)}</div>
+              <button class="rm" data-rm="${i.handle}">Remove</button>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="summary">
+        <h3>Order Summary</h3>
+        <div class="row"><span>Subtotal</span><span>${SF.money(sub)}</span></div>
+        <div class="row"><span>PREPAID discount (10%)</span><span style="color:#1f9d55">−${SF.money(discount)}</span></div>
+        <div class="row"><span>Shipping</span><span>FREE</span></div>
+        <div class="row total"><span>Total</span><span>${SF.money(total)}</span></div>
+        <a class="btn-coral" href="/checkout">PROCEED TO CHECKOUT</a>
+        <a href="/collections" style="display:block;text-align:center;margin-top:14px;color:#777;font-size:14px">Continue shopping</a>
+      </div>
+    </div>`;
+
+    root.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>{const h=b.dataset.inc;const it=SF.Cart.items().find(x=>x.handle===h);SF.Cart.setQty(h,it.qty+1);render();});
+    root.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{const h=b.dataset.dec;const it=SF.Cart.items().find(x=>x.handle===h);SF.Cart.setQty(h,it.qty-1);render();});
+    root.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{SF.Cart.remove(b.dataset.rm);render();});
+  }
+  render();
+</script>
+</body>
+</html>

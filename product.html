@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product — Sareeify Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+</head>
+<body>
+<div id="header"></div>
+
+<section class="page">
+  <div class="wrap">
+    <div id="pdp"></div>
+    <div style="margin-top:80px">
+      <div class="page-head"><span class="eyebrow">YOU MAY ALSO LIKE</span><h1 style="font-size:30px">More to Explore</h1></div>
+      <div class="pgrid" id="related"></div>
+    </div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<script src="/store.js"></script>
+<script src="/shared.js"></script>
+<script>
+  const handle = new URLSearchParams(location.search).get('h');
+  const p = SF.CATALOG.find(x=>x.handle===handle) || SF.CATALOG[0];
+  const stars = '★★★★★☆☆☆☆☆'.slice(5-p.rating,10-p.rating);
+  const save = p.compare ? Math.round((1-p.price/p.compare)*100) : 0;
+
+  document.getElementById('pdp').innerHTML = `
+  <div class="pdp">
+    <div class="gallery">
+      <div class="main"><img id="mainImg" src="${p.imgs[0]}" alt="${p.title}"></div>
+      <div class="thumbs">${p.imgs.map((s,i)=>`<img class="${i===0?'on':''}" data-thumb="${s}" src="${s}">`).join('')}</div>
+    </div>
+    <div class="info">
+      <div class="cat">${p.cat}</div>
+      <h1>${p.title}</h1>
+      <div class="rate">${stars} <span style="color:#999;font-size:13px;margin-left:6px">(128 reviews)</span></div>
+      <div class="pr">${SF.money(p.price)} ${p.compare?`<s>${SF.money(p.compare)}</s>`:''}</div>
+      ${save?`<div class="save">You save ${SF.money(p.compare-p.price)} (${save}% off)</div>`:''}
+      <p class="desc">${p.desc}</p>
+      <div style="font-size:13px;letter-spacing:1px;color:#777;margin-bottom:10px">SIZE</div>
+      <div class="sizes" id="sizes">${['XS','S','M','L','XL'].map((s,i)=>`<button class="${i===2?'on':''}">${s}</button>`).join('')}</div>
+      <div class="qtyrow">
+        <div class="qtybox"><button id="dec">−</button><span id="qty">1</span><button id="inc">+</button></div>
+      </div>
+      <div class="actions">
+        <button class="btn-dark" id="addCart">ADD TO CART</button>
+        <button class="btn-coral" id="buyNow">BUY NOW</button>
+      </div>
+      <div class="perks">
+        <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Dispatched within 24 hours</div>
+        <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> 7-day easy returns</div>
+        <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Secure payments · 10% off with PREPAID</div>
+      </div>
+    </div>
+  </div>`;
+
+  // gallery thumbs
+  document.querySelectorAll('[data-thumb]').forEach(t=>t.addEventListener('click',()=>{
+    document.getElementById('mainImg').src=t.getAttribute('data-thumb');
+    document.querySelectorAll('[data-thumb]').forEach(x=>x.classList.remove('on')); t.classList.add('on');
+  }));
+  // sizes
+  document.getElementById('sizes').addEventListener('click',e=>{ if(e.target.tagName==='BUTTON'){
+    document.querySelectorAll('#sizes button').forEach(b=>b.classList.remove('on')); e.target.classList.add('on'); }});
+  // qty
+  let qty=1; const qEl=document.getElementById('qty');
+  document.getElementById('inc').onclick=()=>{qty++;qEl.textContent=qty;};
+  document.getElementById('dec').onclick=()=>{if(qty>1){qty--;qEl.textContent=qty;}};
+  // cart
+  document.getElementById('addCart').onclick=()=>{ SF.Cart.add(p.handle,qty); toast('Added to cart'); };
+  document.getElementById('buyNow').onclick=()=>{ SF.Cart.add(p.handle,qty); location.href='/checkout'; };
+
+  // related
+  const rel = SF.CATALOG.filter(x=>x.handle!==p.handle).slice(0,4);
+  const g=document.getElementById('related'); g.innerHTML=rel.map(SF_card).join(''); wireGrid(g);
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — Sareeify Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+</head>
+<body>
+<div id="header"></div>
+
+<section class="page">
+  <div class="wrap">
+    <div id="coRoot"></div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<script src="/store.js"></script>
+<script src="/shared.js"></script>
+<script>
+  function render(){
+    const items = SF.Cart.items();
+    const root = document.getElementById('coRoot');
+    if(!items.length){
+      root.innerHTML = `<div class="empty">
+        <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/></svg>
+        <h3 style="font-family:'Playfair Display',serif;font-size:24px;margin-bottom:8px;color:#1c1c1c">Nothing to check out</h3>
+        <p style="margin-bottom:22px">Your cart is empty.</p>
+        <a class="btn-dark" href="/collections">SHOP NOW</a></div>`;
+      return;
+    }
+    const sub=SF.Cart.total(), discount=Math.round(sub*0.10), total=sub-discount;
+    root.innerHTML = `
+    <div class="page-head" style="text-align:left;margin-bottom:30px"><span class="eyebrow">CHECKOUT</span><h1>Complete Your Order</h1></div>
+    <div class="cowrap">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:20px;margin-bottom:18px">Shipping Details</h3>
+        <div class="frow"><div class="field"><label>First name</label><input id="fn" placeholder="Priya"></div>
+          <div class="field"><label>Last name</label><input id="ln" placeholder="Sharma"></div></div>
+        <div class="field"><label>Email</label><input id="em" type="email" placeholder="you@example.com"></div>
+        <div class="field"><label>Phone</label><input id="ph" placeholder="+91 ..."></div>
+        <div class="field"><label>Address</label><input id="ad" placeholder="House no, street, area"></div>
+        <div class="frow"><div class="field"><label>City</label><input id="ct" placeholder="Mumbai"></div>
+          <div class="field"><label>PIN code</label><input id="pin" placeholder="400001"></div></div>
+
+        <h3 style="font-family:'Playfair Display',serif;font-size:20px;margin:26px 0 16px">Payment</h3>
+        <label class="pay on"><input type="radio" name="pay" checked> Pay Online (UPI / Card) — extra 10% off applied</label>
+        <label class="pay"><input type="radio" name="pay"> Cash on Delivery</label>
+      </div>
+
+      <div class="summary">
+        <h3>Your Order</h3>
+        ${items.map(i=>`<div class="row"><span>${i.title} × ${i.qty}</span><span>${SF.money(i.price*i.qty)}</span></div>`).join('')}
+        <div class="row" style="border-top:1px solid var(--line);margin-top:8px;padding-top:12px"><span>Subtotal</span><span>${SF.money(sub)}</span></div>
+        <div class="row"><span>PREPAID discount</span><span style="color:#1f9d55">−${SF.money(discount)}</span></div>
+        <div class="row"><span>Shipping</span><span>FREE</span></div>
+        <div class="row total"><span>Total</span><span>${SF.money(total)}</span></div>
+        <button class="btn-coral" id="place">PLACE ORDER</button>
+      </div>
+    </div>`;
+
+    document.querySelectorAll('.pay').forEach(p=>p.addEventListener('click',()=>{
+      document.querySelectorAll('.pay').forEach(x=>x.classList.remove('on')); p.classList.add('on');
+    }));
+
+    document.getElementById('place').onclick=()=>{
+      const fn=document.getElementById('fn').value.trim();
+      const em=document.getElementById('em').value.trim();
+      const ad=document.getElementById('ad').value.trim();
+      if(!fn||!em||!ad){ toast('Please fill name, email and address'); return; }
+      const orderNo = '#' + Math.floor(100000+Math.random()*899999);
+      // NOTE: when Supabase is wired, POST the order here to persist it.
+      SF.Cart.clear();
+      root.innerHTML = `<div class="success">
+        <div class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+        <h1>Order Placed!</h1>
+        <p>Thank you, ${fn}. Your order <b>${orderNo}</b> is confirmed.</p>
+        <p>A confirmation has been sent to ${em}.</p>
+        <p style="margin:18px 0 26px">Total paid: <b>${SF.money(total)}</b></p>
+        <a class="btn-dark" href="/collections">CONTINUE SHOPPING</a>
+      </div>`;
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+  }
+  render();
+</script>
+</body>
+</html>

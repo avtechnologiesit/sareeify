@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search — Sareeify Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+</head>
+<body>
+<div id="header"></div>
+
+<section class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="eyebrow">SEARCH</span>
+      <h1 id="sTitle">Results</h1>
+      <p id="sCount"></p>
+    </div>
+    <div class="pgrid" id="grid"></div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<script src="/store.js"></script>
+<script src="/shared.js"></script>
+<script>
+  const q = (new URLSearchParams(location.search).get('q')||'').trim();
+  document.getElementById('sTitle').textContent = q ? `Results for "${q}"` : 'Search';
+  const ql = q.toLowerCase();
+  const res = q ? SF.CATALOG.filter(p =>
+    p.title.toLowerCase().includes(ql) || p.cat.toLowerCase().includes(ql) || p.desc.toLowerCase().includes(ql)
+  ) : [];
+  document.getElementById('sCount').textContent = q ? (res.length+' product'+(res.length!==1?'s':'')+' found') : 'Type something in the search bar above.';
+  const g=document.getElementById('grid');
+  g.innerHTML = res.map(SF_card).join('') || (q?'<p style="grid-column:1/-1;color:#888;padding:30px 0">No matches. Try “saree”, “lehenga”, or “wedding”.</p>':'');
+  wireGrid(g);
+</script>
+</body>
+</html>

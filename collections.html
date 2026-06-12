@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop — Sareeify Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+</head>
+<body>
+<div id="header"></div>
+
+<section class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="eyebrow">SHOP</span>
+      <h1 id="collTitle">All Products</h1>
+      <p id="collCount"></p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="pgrid" id="grid"></div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<script src="/store.js"></script>
+<script src="/shared.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const cat = params.get('cat');
+  const cats = ['All', ...Array.from(new Set(SF.CATALOG.map(p=>p.cat)))];
+  const active = cat && cats.includes(cat) ? cat : 'All';
+
+  document.getElementById('filters').innerHTML = cats.map(c=>
+    `<a class="chip ${c===active?'on':''}" href="${c==='All'?'/collections':'/collections?cat='+encodeURIComponent(c)}">${c}</a>`).join('');
+
+  let items = SF.CATALOG;
+  if(active!=='All') items = items.filter(p=>p.cat===active ||
+    // map submenu labels loosely to categories/titles
+    p.title.toLowerCase().includes(active.toLowerCase().split(' ')[0]));
+  if(active!=='All') document.getElementById('collTitle').textContent = active;
+  document.getElementById('collCount').textContent = items.length + ' product' + (items.length!==1?'s':'');
+
+  document.getElementById('grid').innerHTML = items.map(SF_card).join('') ||
+    '<p style="grid-column:1/-1;color:#888;padding:40px 0">No products in this category yet.</p>';
+  wireGrid(document.getElementById('grid'));
+</script>
+</body>
+</html>
